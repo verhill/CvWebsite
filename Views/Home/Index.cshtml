@@ -1,0 +1,116 @@
+﻿
+@model CV_Website.ViewModels.ProjecthomeViewModel
+
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+
+    <input id="q" autocomplete="off" name="inputstring" placeholder="Användarnamn" style="width:275px;" oninput="search(this.value)" />
+        
+    <div id="userlist">
+       
+    </div>
+    
+    @if (!Model.Allcv.Any())
+    {
+        <p>Finns inge CVn</p>
+    }
+    else
+    {
+        <label>
+            CV
+        </label>
+        <ul id="Cvlink" style="overflow-y:scroll; overflow-x:hidden; height:400px;">
+            @foreach (var cv in Model.Allcv)
+            {
+                if ((@ViewBag.CurrentUserId != null || cv.User.Private == false) && cv.User.Deactivated == false)
+                {
+                    <li>
+                        <a id="CvlinkItem" href="@Url.Action("GoToUserPage", "User", new { userId = cv.User.Id })">
+                            <div id="Cvpreview">
+                                <p>Namn: @cv.User.Name</p>
+                                <p>Epost: @cv.User.UserName</p>
+
+                                @if (cv.Experience != null && cv.Experience.Any())
+                                {
+                                    <hr />
+                                    <p>Erfarenheter:</p>
+                                    @foreach (var erfarenhet in cv.Experience)
+                                    {
+                                        <p>@erfarenhet.Name</p>
+                                    }
+                                }
+                                @if (cv.Skills != null && cv.Skills.Any())
+                                {
+                                    <hr />
+                                    <p>Färdigheter:</p>
+                                    @foreach (var fardigheter in cv.Skills)
+                                    {
+                                        <p>@fardigheter.Name</p>
+                                    }
+                                }
+                            </div>
+                        </a>
+                    </li>
+                } 
+
+            }
+        </ul>
+            
+        
+    }
+    
+</div>
+
+<hr />
+
+<table class="table table-striped table-bordered table-hover" >
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Titel</th>
+            <th scope="col">Beskrivning</th>
+            <th scope="col">Mer Info</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            List<Project> addedproj = new List<Project>();
+            var projsorted = Model.Allprojects.OrderByDescending(s => s.ProjectId).Take(5);
+                                
+        }
+
+        
+        @foreach (var proj in projsorted)
+        {
+            <tr>
+                <td>@proj.Title</td>
+                <td>@proj.Description</td>
+                <td>
+                    <a class="btn btn-primary" asp-controller="Project" asp-action="ProjectPage" asp-route-id="@proj.ProjectId">Mer info</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+
+    async function search(sinput) {
+        if (sinput.length < 1) {
+            document.getElementById("userlist").innerHTML = "";
+            return;
+        }
+        //gör en variable som lagrar en url för fetchen
+        const url = `/User/Search?inputstring=${encodeURIComponent(sinput)}`;
+        //skickar en fetch request till urlen och await används för att se till att all data hämtas
+        const resp = await fetch(url);
+        //hämtar text datan från responsen
+        const result = await resp.text();
+
+        document.getElementById("userlist").innerHTML = result;
+    }
+
+</script>

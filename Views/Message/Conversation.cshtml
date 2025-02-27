@@ -1,0 +1,62 @@
+﻿@model IEnumerable<CV_Website.Models.Message>
+
+@{
+    ViewData["Title"] = "Conversation";
+    string lastSenderName = null;
+}
+
+<h1>Meddelande med @ViewBag.OtherUserName</h1>
+
+<div class="conversation">
+    <table class="messages">
+        <tbody>
+            @foreach (var item in Model) {
+                <tr>
+                    <td>
+                        @if (item.SenderName != lastSenderName)
+                        {
+                            @item.SenderName
+                            lastSenderName = item.SenderName;
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td class="message-container @(item.SenderId == ViewBag.CurrentUserId ? "sender" : "receiver")">
+                        <span class="messagetextbox">
+                            @item.MessageText
+                        </span>
+
+                        @if (!item.Read && item.SenderId != ViewBag.CurrentUserId)
+                        {
+                            <form asp-action="MarkAsRead" method="post" class="MarkRead">
+                                <input type="hidden" name="messageId" value="@item.MessageId" />
+                                <input type="submit" value="Markera Läst" />
+                            </form>
+                        }
+
+                        <div class="delete-message-container">
+                            <form asp-action="DeleteMessage" method="post" class="delete-message-form">
+                                <input type="hidden" name="messageId" value="@item.MessageId" />
+                                <button type="button" class="delete-button" onclick="showConfirmation(this)">&#128465;</button>
+                                <div class="confirmation-buttons" style="display:none;">
+                                    <button type="submit" class="confirm-button">Bekräfta</button>
+                                    <button type="button" class="cancel-button" onclick="hideConfirmation(this)">Avbryt</button>
+                                </div>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @if (ViewBag.OtherUserId != null){
+		<div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-action="SendMessage" method="post" class="message-form">
+            <input type="hidden" name="SenderId" value="@ViewBag.CurrentUserId" />
+            <input type="hidden" name="ReceiverId" value="@ViewBag.OtherUserId" />
+            <input type="hidden" name="SenderName" value="@ViewBag.CurrentUserName" />
+            <textarea name="MessageText" rows="2" class="message-textarea" placeholder="Skriv ditt meddelande..."></textarea>
+            <button type="submit" class="btn btn-primary">Skicka</button>
+        </form>
+    }
+</div>

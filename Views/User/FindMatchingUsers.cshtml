@@ -1,0 +1,44 @@
+﻿@model IEnumerable<CV_Website.Models.CV>
+
+    @if(Model.Any()){
+    <h1>Profiler med matchande färdigheter</h1>
+    <ul id="Cvlink">
+        @foreach (var cv in Model)
+        {
+            @if (ViewBag.CurrentUserId!= null || !cv.User.Private)
+            {
+                <li>
+                    <a id="CvlinkItem" href="@Url.Action("GoToUserPage", "User", new { userId = cv.User.Id })">
+                        <div id="Cvpreview">
+                            <p>Namn: @cv.User.Name</p>
+                            <p>Epost: @cv.User.Email</p>
+
+                            @if (cv.Experience != null && cv.Experience.Any())
+                            {
+                                <hr />
+                                <p>Erfarenheter:</p>
+                                @foreach (var erfarenhet in cv.Experience)
+                                {
+                                    <p>@erfarenhet.Name</p>
+                                }
+                            }
+                            @if (cv.Skills != null && cv.Skills.Any())
+                            {
+                                <hr />
+                                <p>Färdigheter:</p>
+                                @foreach (var fardigheter in cv.Skills)
+                                {
+                                    <p>@fardigheter.Name</p>
+                                }
+                            }
+                        </div>
+                    </a>
+                </li>
+            }
+        }
+    </ul>
+    }
+    else
+    {
+        <h1>Finns inga profiler med matchande färdigheter</h1>
+    }

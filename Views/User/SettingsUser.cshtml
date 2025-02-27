@@ -1,0 +1,74 @@
+﻿@model CV_Website.ViewModels.UserSettingsViewModel
+
+
+<form asp-action="SettingsUser" method="post">
+    
+<div id="VU" class="profil">
+        <h2>Dina uppgifter</h2>
+
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Email" />
+
+        <div class="profile-field6">
+          <div class="form-group col-md-6">
+              <label for="Name">Namn</label>
+             <input asp-for="Name" class="form-control" id="inputName4" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+          </div>
+        </div>
+
+        <br />
+
+        <div class="profile-field3">
+
+            <div class="form-group col-md-6">
+                <label for="UserName">E-post</label>
+            <input asp-for="UserName" class="form-control" id="inputEmail4" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+
+        </div>
+        <br />
+
+        <div class="profile-field5">
+            <div class="form-group col-md-6">
+                <label for="PhoneNumber">Telefonnummer</label>
+                <input asp-for="PhoneNumber" class="form-control" id="inputPhone" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+        </div>
+        <br />
+
+    <div class="profile-field2">
+            <div class="form-group col-md-6">
+                <label for="Address">Adress</label>
+                <input asp-for="Address" class="form-control" id="inputAddress" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+    </div>
+
+        <br />
+
+    <div class="profile-field4">
+        <label>Sätt din profil till privat</label>
+        <input asp-for="Private" type="checkbox"/>
+        
+    </div>
+
+        <br />
+
+</div>
+    <button class=" btn btn-primary" type="submit">Spara</button>
+    <a class="btn btn-primary" asp-controller="User" asp-action="ChangePassword" >Ändra lösenord</a>
+   
+</form>
+
+<div class="delete-message-container mt-3">
+    <form asp-controller="User" asp-action="DeactivateAccount" method="post" class="delete-message-form">
+        <button type="button" class="btn btn-danger" onclick="showConfirmation(this)">Ta bort ditt konto</button>
+        <div class="confirmation-buttons" style="display:none;">
+            <button type="submit" class="confirm-button">Bekräfta</button>
+            <button type="button" class="cancel-button" onclick="hideConfirmation(this)">Avbryt</button>
+        </div>
+    </form>
+</div>

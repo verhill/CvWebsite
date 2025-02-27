@@ -1,0 +1,136 @@
+﻿@model CV_Website.ViewModels.CVViewModel
+
+<div class="Tcon">
+    <form asp-action="EditCV" method="post">
+	<input type="hidden" asp-for="UserId" />
+
+	<div class="form-item f-i0">
+	    
+
+        <div class="f-i1">
+            <h4>Färdigheter</h4>
+        @if (Model.AllSkills != null && Model.AllSkills.Any())
+        {
+            <ul>
+                @foreach (var skill in Model.AllSkills)
+                {
+                    <li>
+                         <input type="checkbox" name="SelectedSkills" value="@skill.SkillsId" onchange= "SearchSkill(this.value, this.checked)"
+                        @(Model.SelectedSkills != null && Model.SelectedSkills.Contains(skill.SkillsId) ? "checked" : "") />
+                        @skill.Name
+                    </li>
+                }
+            </ul>
+        }
+        </div>
+
+        <div class="f-i2">
+        <h4>Utbildning</h4>
+        @if (Model.AllEducations != null && Model.AllEducations.Any())
+        {
+            <ul>
+                @foreach (var education in Model.AllEducations)
+                {
+                    <li>
+                            <input type="checkbox" name="SelectedEducations" value="@education.EducationId" onchange=" SearchE(this.value, this.checked)"
+                        @(Model.SelectedEducations != null && Model.SelectedEducations.Contains(education.EducationId) ? "checked" : "") />
+                        @education.Name
+                    </li>
+                }
+            </ul>
+        }
+        </div>
+
+        <div class="f-i3">
+        <h4>Erfarenheter</h4>
+        @if (Model.AllExperiences != null && Model.AllExperiences.Any())
+        {
+            <ul>
+                @foreach (var experience in Model.AllExperiences)
+                {
+                    <li>
+                            <input type="checkbox" name="SelectedExperiences" value="@experience.ExperienceId" onchange="SearchEx(this.value, this.checked)"
+                            @(Model.SelectedExperiences != null && Model.SelectedExperiences.Contains(experience.ExperienceId) ? "checked" : "") />
+                        @experience.Name
+                    </li>
+                }
+            </ul>
+        }
+        </div>
+
+        <button type="submit" class="btn btn-primary">Spara ändringar</button>
+        <a href=@Url.Action("GoToUserPage", "User", new { userId = ViewBag.CurrentUserId}) class="btn btn-secondary">Avbryt</a>
+    </div>
+    </form>
+ 
+
+       
+       <div class="f-is0">
+        <div class="f-is1">
+            <h4>Valda Färdigheter</h4>
+            <ul id ="NS">
+                @foreach(var si in Model.SelectedSkills)
+                {
+                    var skill = Model.AllSkills.FirstOrDefault(s => s.SkillsId == si);
+                    <li id="SS2-@si">
+                       @skill.Name
+                   </li>
+                }
+            </ul>
+    
+        </div>
+
+        <div class="f-is2">
+            <h4>Valda Utbildning</h4>
+            <ul id="NED">
+                @foreach (var sed in Model.SelectedEducations)
+                {
+                    var education = Model.AllEducations.FirstOrDefault(s => s.EducationId == sed);
+                    <li id="SED2-@sed">
+                        @education.Name
+                    </li>
+                }
+            </ul>
+
+        </div>
+
+        <div class="f-is2">
+            <h4>Valda Erfarenheter</h4>
+            <ul id="NE">
+                @foreach (var NE in Model.SelectedExperiences)
+                {
+                    var experience = Model.AllExperiences.FirstOrDefault(s => s.ExperienceId == NE);
+                    <li id="SE2-@NE">
+                        @experience.Name
+                    </li>
+                }
+            </ul>
+
+        </div>
+      </div>
+
+      <div class="fo-0">
+      <form asp-action="CreateT" method="post">
+        <label>
+            Lägg till ny färdighet
+            <input asp-for="NewSkill" class="form-control" />
+            <span asp-validation-for="NewSkill" class="text-danger"></span>
+        </label>
+
+        <label>
+            Lägg till ny utbildning
+            <input asp-for="NewEducation" class="form-control" />
+            <span asp-validation-for="NewEducation" class="text-danger"></span>
+        </label>
+
+        <label>
+            Lägg till ny erfarenhet
+            <input asp-for="NewExperience" class="form-control" />
+            <span asp-validation-for="NewExperience" class="text-danger"></span>
+        </label>
+
+        <button id="submitnew" type="submit" class="btn btn-primary">Lägg till</button>
+    </form>
+    </div>
+</div>
+

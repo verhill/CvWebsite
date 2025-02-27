@@ -1,0 +1,55 @@
+﻿@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Overview";
+    int currentUserId = ViewBag.CurrentUserId;
+}
+
+<h1>Meddelanden</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Användare</th>
+            <th>Meddelande</th>
+            <th>Olästa meddelanden</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="clickForConversation" onclick="document.getElementById('form-@item.LatestMessage.MessageId').submit();">
+                <td>
+                    @if (item.LatestMessage.SenderId == currentUserId)
+                    {
+                        @(item.LatestMessage.Receiver?.Name as string ?? item.SenderName)
+                    }
+                    else
+                    {
+                        @(item.LatestMessage.Sender?.Name as string ?? item.SenderName)
+                    }
+
+                </td>
+                <td>@item.LatestMessage.MessageText</td>
+                <td>
+                    @if (item.UnreadMessages > 0)
+                    {
+                        <div class="circleRead">
+                            @item.UnreadMessages
+                        </div>
+                    }
+                </td>
+                <td>
+                    <form id="form-@item.LatestMessage.MessageId" action="@Url.Action("Conversation", "Message")" method="get" style="display:none;">
+                        <input type="hidden" name="senderId" value="@item.LatestMessage.SenderId" />
+                        <input type="hidden" name="receiverId" value="@item.LatestMessage.ReceiverId" />
+                        @if (item.LatestMessage.SenderId == null)
+                        {
+                            <input type="hidden" name="senderName" value="@item.SenderName" />
+                        }
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

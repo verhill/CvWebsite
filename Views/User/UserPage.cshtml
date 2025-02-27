@@ -1,0 +1,187 @@
+﻿@model CV_Website.ViewModels.UserPageViewModel
+
+<div id="UID" class="PersonalPage">
+
+	<div id="Info" class="p-f1">
+        @* Flyttade upp kugghjulet i p-f1, säkerställer att användaren är inne på sin egna profil *@
+        @if (ViewBag.CurrentUserId == Model.User.Id)
+        {
+            <div id="Settings" class="p-f3">
+                <a href="@Url.Action("SettingsUser", "User", new { userId = Model.User.Id })">
+                    <i class="fas fa-cog settings-icon" title="Redigera profil"></i>
+                </a>
+            </div>
+        }
+        @if (Model.User.img != null)
+        {
+            <img src="data:image/png;base64,@Convert.ToBase64String(Model.User.img)" alt="Profile Image" />
+        }
+        else
+        {
+            <img src="https://cdn.pixabay.com/photo/2016/12/07/21/01/cartoon-1890438_640.jpg" alt="Test" />
+        }
+	<p id="N1">@Model.User.Name</p>
+    <p>@Model.User.Address</p>
+    <h4>Kontaktainformation:</h4>
+	<p>@Model.User.UserName</p>
+    <p>@Model.User.PhoneNumber</p>
+	</div>
+    
+
+
+	<div id="UP" class="p-f2">
+        <h4>Projekt</h4>
+        @if (ViewBag.CurrentUserId == Model.User.Id)
+        {
+            <div id="PSettings" class="p-settings">
+                <a href="@Url.Action("ListProject", "Project")">
+
+                <i class="fas fa-pencil-alt" title="Redigera projekt"></i>
+
+            </a>
+            </div>}
+        @if (Model.Projects != null && Model.Projects.Any())
+        {
+            <ul class="projects-list">
+                @foreach (var project in Model.Projects)
+                {
+                    <li class="pb">
+                        <p id="T">@project.Title</p>
+                        <p>@project.Description</p>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>Här var det tomt :(</p>
+        }
+
+
+	</div>
+
+       <div id="UCV" class="p-f4">
+        @if (Model.UserCV != null)
+        {
+            <div class="p-f5">
+            <h4>Färdigheter</h4>
+                @if (ViewBag.CurrentUserId == Model.User.Id)
+                {
+                    <div id="PSettings" class="p-settings">
+                        <a href="@Url.Action("EditCV", "CV", new { userId = Model.User.Id })">
+
+                            <i class="fas fa-pencil-alt" title="Redigera färdigheter"></i>
+
+                        </a>
+                    </div>
+                }
+            @foreach (var skill in Model.Skills)
+            {
+                <p>@skill.Name</p>
+            }
+            </div>
+
+            <div class="p-f6">
+            <h4>Erfarenhet</h4>
+                @if (ViewBag.CurrentUserId == Model.User.Id)
+                {
+                    <div id="PSettings" class="p-settings">
+                        <a href="@Url.Action("EditCV", "CV", new { userId = Model.User.Id })">
+
+                            <i class="fas fa-pencil-alt" title="Redigera erfarenhet"></i>
+
+                        </a>
+                    </div>
+                }
+            @foreach (var experience in Model.Experiences)
+            {
+                <p>@experience.Name</p>
+            }
+            </div>
+
+            <div class="p-f7">
+            <h4>Utbildning</h4>
+                @if (ViewBag.CurrentUserId == Model.User.Id)
+                {
+                    <div id="PSettings" class="p-settings">
+                        <a href="@Url.Action("EditCV", "CV", new { userId = Model.User.Id })">
+
+                            <i class="fas fa-pencil-alt" title="Redigera utbildning"></i>
+
+                        </a>
+                    </div>
+                }
+            @foreach (var education in Model.Educations)
+            {
+                <p>@education.Name</p>
+            }
+            </div>
+        
+        }
+        else
+        {
+            <div class="p-f8">
+            <p>Du har inget aktivt CV</p>
+            <a href="@Url.Action("EditCV", "CV", new { userId = Model.User.Id })" class="btn btn-primary">
+                Skapa CV
+            </a>
+            </div>
+
+        }
+        </div>
+    @if(ViewBag.CurrentUserId == Model.User.Id){
+		@if (Model.UserCV != null)
+		{
+            <p>Profilbesök: @Model.UserCV.ViewCount</p>
+		}
+    
+    }
+
+    @if (ViewBag.CurrentUserId != @Model.User.Id){
+        <form asp-action="SendMessageFromUser" method="post" class="message-formCV">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            @if (ViewBag.CurrentUserId != null)
+            {
+                <input type="hidden" name="SenderId" value="@ViewBag.CurrentUserId" />
+                <input type="hidden" name="SenderName" value="@ViewBag.CurrentUserName" />
+            }
+            else
+            {
+                <textarea name="SenderName" rows="1" class="senderNameCV form-control" placeholder="Skriv ditt namn..."></textarea>
+            }
+            <input type="hidden" name="ReceiverId" value="@Model.User.Id" />
+            <textarea name="MessageText" rows="2" class="message-textareaCV form-control" placeholder="Skriv ditt meddelande..."></textarea>
+            <button type="submit" class="btn btn-primary">Skicka</button>
+        </form>
+	}
+    @if (@Model.UserCV != null){
+        <form asp-controller="User" asp-action="FindMatchingUsers" method="get">
+            <button type="submit" class="btn btn-primary">Hitta liknande CV</button>
+            <input type="hidden" name="cvid" value="@Model.UserCV.CVId" />
+        </form>
+	}
+
+    @{
+        ViewData["Title"] = "Upload Profile Image";
+    }
+
+    
+    @if (ViewBag.CurrentUserId == Model.User.Id)
+    {
+        @* <h1>@ViewData["Title"]</h1> *@
+
+        <form asp-action="UploadImage" enctype="multipart/form-data" method="post" class="Upload-form">
+            <input name="Id" type="hidden" value=@Model.User.Id>
+            <div class="form-group">
+                <label for="profileImage">Choose Image</label>
+                <input type="file" name="profileImage" id="profileImage" class="form-control" accept="image/*" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+    }
+    @if (@ViewBag.CurrentUserId != Model.User.Id && Model.User.Private == true){}
+    else{
+        <a class="btn btn-primary" asp-controller="User" asp-action="DownloadProfile" asp-route-id=@Model.User.Id>Ladda ner profil</a>
+    }
+</div>
+

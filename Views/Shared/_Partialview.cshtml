@@ -1,0 +1,33 @@
+﻿
+@{
+    ViewData["Title"] = "_Partialview";
+}
+
+@model IEnumerable<CV_Website.Models.User>
+
+<ul id="userlist" style="overflow-y:scroll; overflow-x:clip; height:200px;">
+
+    @{
+        
+        var projsorted = Model.OrderByDescending(s => s.UserName).Take(10);
+    }
+    <div id="userborder">
+    @foreach (var user in projsorted)
+    {
+        if (@ViewBag.CurrentUserId != null || user.Private == false)
+        {
+            
+                <a id="CvlinkItem" href="@Url.Action("GoToUserPage", "User", new { userId = user.Id })">
+                <li id="listuser">@user.Name</li>
+                <hr />
+                </a>
+            
+            
+        }
+       
+    }
+    </div>
+</ul>
+
+
+

@@ -1,0 +1,109 @@
+﻿@model CV_Website.Models.Project
+
+<div class="container mt-5">
+    
+    <div class="row">
+       
+        <div class="col-md-8 offset-md-2">
+            
+             <h2 class="text-center">@Model.Title</h2>
+
+           
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Beskrivning</h5>
+                    <p class="card-text">@Model.Description</p>
+                </div>
+            </div>
+
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Information</h5>
+                    <p class="card-text">@Model.Information</p>
+                </div>
+            </div>
+
+           
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Skapare</h5>
+                    @if ((!User.Identity.IsAuthenticated && Model.Creator.Private == true) || Model.Creator.Deactivated == true)
+                    {
+                        
+                        
+                        <p class="card-text">Skaparen är privat eller deaktiverad</p>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("GoToUserPage", "User", new { userId = Model.Creator.Id })">
+                            <strong>@Model.Creator.Name</strong>
+                        </a>
+                    }
+
+                </div>
+            </div>
+
+         
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Personer i projektet</h5>
+                    @if (Model.Users != null && Model.Users.Any())
+                    {
+                        <ul class="list-group">
+                            @foreach (var user in Model.Users)
+                            {
+                                
+                                <a href="@Url.Action("GoToUserPage", "User", new { userId = user.Id })">
+                                    @user.Name
+                                </a>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Finns inga personer i detta projekt.</p>
+                    }
+
+                </div>
+                
+            </div>
+            @if (User.Identity.IsAuthenticated)
+            {
+
+                int loggedInUserId = @ViewBag.CurrentUserId;
+                bool isUserInProject = Model.Users.Any(u => u.Id == loggedInUserId);
+
+                @if (isUserInProject)
+                {
+
+                    <td><a class="btn btn-primary" asp-controller="Project" asp-action="LeaveProject" asp-route-id="@Model.ProjectId">Lämna</a></td>
+                }
+
+                else
+                {
+                    <td><a class="btn btn-primary" asp-controller="Project" asp-action="JoinProject" asp-route-id="@Model.ProjectId">Gå med</a></td>
+                }
+                @if (Model.CreatorId == loggedInUserId)
+                {
+                    <td><a class="btn btn-primary" asp-controller="Project" asp-action="EditProject" asp-route-id="@Model.ProjectId">Redigera projekt</a></td>
+
+                    <div class="delete-message-container mt-3">
+                        <form asp-action="DeleteProject" method="post" class="delete-message-form">
+                            <input type="hidden" name="Id" value="@Model.ProjectId" />
+                            <button type="button" class="btn btn-danger" onclick="showConfirmation(this)">Radera projekt</button>
+                            <div class="confirmation-buttons" style="display:none;">
+                                <button type="submit" class="confirm-button">Bekräfta</button>
+                                <button type="button" class="cancel-button" onclick="hideConfirmation(this)">Avbryt</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    
+                }
+            }
+        </div>
+        
+    </div>
+   
+</div>
